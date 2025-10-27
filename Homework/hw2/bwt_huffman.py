@@ -19,7 +19,27 @@ termchar = 17 # you can assume the byte 17 does not appear in the input file
 # Huffman-encoded message (e.g. "1001011") and ring is your ``decoder ring'' needed 
 # to decompress that message.
 def encode(msg):    
-    raise NotImplementedError
+    freq = Counter(msg)
+    nodes=[[weight, [symbol, ""]] for symbol, weight in freq.items()]
+
+    while len(nodes) > 1:
+        nodes = sorted(nodes, key = lambda x: x[0])
+        #pop two lowest freq and start making encoding
+        left = nodes.pop(0)
+        right = nodes.pop(0)
+        for pair in left[1:]:
+            pair[1] = '0'+pair[1]
+        for pair in right[1:]:
+            pair[1] = '1'+pair[1]
+        
+        merged= [left[0]+right[0]] + left[1:] + right[1:]
+        nodes.append(merged)
+
+    final = nodes[0]
+    decoderRing= {symbol: code for symbol, code in final[1:]}
+    enc = "".join(decoderRing[b] for b in msg)
+
+    return(enc, decoderRing)
 
 # This takes a string, cmsg, which must contain only 0s and 1s, and your 
 # representation of the ``decoder ring'' ring, and returns a bytearray msg which 
