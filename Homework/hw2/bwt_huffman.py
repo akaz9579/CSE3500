@@ -46,9 +46,20 @@ def encode(msg):
 # is the decompressed message. 
 def decode(cmsg, decoderRing):
     # Creates an array with the appropriate type so that the message can be decoded.
+    invRing= {code: byte for byte, code in decoderRing}
     byteMsg = bytearray()
+    current= ''
+
+    for bit in cmsg:
+        current += bit
+
+        if current in invRing:
+            byteMsg.append(invRing[current])
+        current = ''
+
+    return byteMsg
     
-    raise NotImplementedError
+    
 
 # This takes a sequence of bytes over which you can iterate, msg, and returns a tuple (compressed, ring) 
 # in which compressed is a bytearray (containing the Huffman-coded message in binary, 
