@@ -112,7 +112,10 @@ def ibwt(msg):
                 cur.append(firstRow[i])
                 next = cloneLR.find(firstRow[i]) #find the index of first occurance of ith char
                 cur.append(firstRow[next])
+                cloneLR.remove(lastRow[next])
                 
+
+
 
 
 
