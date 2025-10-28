@@ -75,16 +75,13 @@ def compress(msg, useBWT):
     if useBWT:
         msg = bwt(msg)
         msg = mtf(msg)
-    
 
     # Initializes an array to hold the compressed message.
     compressed = bytearray()
-    #bwt,
-    #mft
-    #ibwt??
-    #huffman (encode )
-    
-    
+
+    encTup = encode(msg) #0s and 1s, convert to byte arrays 
+     
+
     raise NotImplementedError
 
 # This takes a sequence of bytes over which you can iterate containing the Huffman-coded message, and the 
@@ -99,6 +96,13 @@ def decompress(msg, decoderRing, useBWT):
         decompressedMsg = imtf(decompressedMsg)
         decompressedMsg = ibwt(decompressedMsg)
    
+    byteMsg = decode(msg, decoderRing)
+
+    for bit in byteMsg[0]:
+
+        
+    
+    
 
     raise NotImplementedError
 
@@ -106,13 +110,13 @@ def decompress(msg, decoderRing, useBWT):
 def ibwt(msg):
     # I would work with a bytearray to store the IBWT output
     out = bytearray()
-    lastRow =  bwt(msg)
-    firstRow = sorted(lastRow)
+    lastRow = msg
+    firstRow = sorted(msg)
 
     #order you see in in lastRow of char is same order u see them in first
     for i in range(firstRow):
             cur = bytearray()
-            #lastRow char is before firstRow char
+            #lastRow char is before firstRow char 
             cloneLR = lastRow
             while len(cloneLR) != 0:
                 cur.append(firstRow[i])
@@ -123,6 +127,7 @@ def ibwt(msg):
                 cloneLR.pop(nextClone)
             out.append(cur)
 
+    
     return out
 
 
