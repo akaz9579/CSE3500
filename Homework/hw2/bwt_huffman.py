@@ -23,6 +23,7 @@ termchar = 17 # you can assume the byte 17 does not appear in the input file
 # and returns a tuple (enc,\ ring) in which enc is the ASCII representation of the 
 # Huffman-encoded message (e.g. "1001011") and ring is your ``decoder ring'' needed 
 # to decompress that message.
+
 def encode(msg):    
     freq = Counter(msg)
     nodes=[[weight, [symbol, ""]] for symbol, weight in freq.items()]
@@ -77,6 +78,7 @@ def compress(msg, useBWT):
 
     # Initializes an array to hold the compressed message.
     compressed = bytearray()
+
     
     raise NotImplementedError
 
@@ -97,6 +99,29 @@ def decompress(msg, decoderRing, useBWT):
 # memory efficient iBWT
 def ibwt(msg):
     # I would work with a bytearray to store the IBWT output
+    out = bytearray()
+    lastRow =  bwt(msg)
+    firstRow = sorted(lastRow)
+
+    #order you see in in lastRow of char is same order u see them in first
+    for i in range(firstRow):
+            cur = bytearray()
+            #lastRow char is before firstRow char
+            cloneLR = lastRow
+            while len(cloneLR) != 0:
+                cur.append(firstRow[i])
+                next = cloneLR.find(firstRow[i]) #find the index of first occurance of ith char
+                cur.append(firstRow[next])
+                
+
+
+
+
+            
+
+
+
+
     raise NotImplementedError
 
 
