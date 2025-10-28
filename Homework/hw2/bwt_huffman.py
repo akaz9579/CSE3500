@@ -75,10 +75,15 @@ def compress(msg, useBWT):
     if useBWT:
         msg = bwt(msg)
         msg = mtf(msg)
+    
 
     # Initializes an array to hold the compressed message.
     compressed = bytearray()
-
+    #bwt,
+    #mft
+    #ibwt??
+    #huffman (encode )
+    
     
     raise NotImplementedError
 
@@ -93,6 +98,7 @@ def decompress(msg, decoderRing, useBWT):
     if useBWT:
         decompressedMsg = imtf(decompressedMsg)
         decompressedMsg = ibwt(decompressedMsg)
+   
 
     raise NotImplementedError
 
@@ -110,22 +116,14 @@ def ibwt(msg):
             cloneLR = lastRow
             while len(cloneLR) != 0:
                 cur.append(firstRow[i])
-                next = cloneLR.find(firstRow[i]) #find the index of first occurance of ith char
+                nextClone = cloneLR.find(firstRow[i]) 
+                next = lastRow.find(cloneLR[nextClone])
+                #find the index of first occurance of ith char
                 cur.append(firstRow[next])
-                cloneLR.remove(lastRow[next])
-                
+                cloneLR.pop(nextClone)
+            out.append(cur)
 
-
-
-
-
-
-            
-
-
-
-
-    raise NotImplementedError
+    return out
 
 
 # Burrows-Wheeler Transform fncs
