@@ -77,12 +77,17 @@ def compress(msg, useBWT):
         msg = mtf(msg)
 
     # Initializes an array to hold the compressed message.
+   
+
+    bString, decoderRing = encode(msg) #0s and 1s, convert to byte arrays 
     compressed = bytearray()
+    for i in range(0, len(bString), 8):
+        byte = bString[i:i+8]
+        if len(byte)<8:
+            byte = byte.ljust(8, '0')# incase the string needs padding
+        compressed.append(int(byte,2))
 
-    encTup = encode(msg) #0s and 1s, convert to byte arrays 
-     
-
-    raise NotImplementedError
+    return (compressed, decoderRing)
 
 # This takes a sequence of bytes over which you can iterate containing the Huffman-coded message, and the 
 # decoder ring needed to decompress it.  It returns the bytearray which is the decompressed message. 
@@ -100,10 +105,7 @@ def decompress(msg, decoderRing, useBWT):
 
     for bit in byteMsg[0]:
 
-        
     
-    
-
     raise NotImplementedError
 
 # memory efficient iBWT
