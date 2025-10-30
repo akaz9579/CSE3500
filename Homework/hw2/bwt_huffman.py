@@ -78,13 +78,19 @@ def compress(msg, useBWT):
 
     # Initializes an array to hold the compressed message.
     bString, decoderRing = encode(msg) #0s and 1s, convert to byte arrays 
+    
+    padding = (8 - len(bString) % 8) % 8# incase the string needs padding
+    if padding:
+        bString = bString.ljust(len(bString) + padding, '0')
+
+
     compressed = bytearray()
     for i in range(0, len(bString), 8):
         byte = bString[i:i+8]
-        if len(byte)<8:
-            byte = byte.ljust(8, '0')# incase the string needs padding
-        compressed.append(int(byte,2))
+        compressed.append(int(byte, 2))
 
+    compressed = bytearray([padding]) + compressed
+    
     return (compressed, decoderRing)
 
 # This takes a sequence of bytes over which you can iterate containing the Huffman-coded message, and the 
