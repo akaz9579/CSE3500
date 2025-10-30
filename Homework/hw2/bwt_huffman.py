@@ -52,7 +52,7 @@ def encode(msg):
 # is the decompressed message. 
 def decode(cmsg, decoderRing):
     # Creates an array with the appropriate type so that the message can be decoded.
-    invRing= {code: byte for byte, code in decoderRing}
+    invRing = {code: byte for byte, code in decoderRing.items()}
     byteMsg = bytearray()
     current= ''
 
@@ -61,7 +61,7 @@ def decode(cmsg, decoderRing):
 
         if current in invRing:
             byteMsg.append(invRing[current])
-        current = ''
+            current = ''
 
     return byteMsg
     
@@ -90,58 +90,55 @@ def compress(msg, useBWT):
 # This takes a sequence of bytes over which you can iterate containing the Huffman-coded message, and the 
 # decoder ring needed to decompress it.  It returns the bytearray which is the decompressed message. 
 def decompress(msg, decoderRing, useBWT):
-    # Creates an array with the appropriate type so that the message can be decoded.
-    byteArray = bytearray(msg)
+    # Convert packed bytes to bitstring
+    padding = msg[0]
+    msg = msg[1:]  #  padding header
+
+    cmsg = ''.join(f'{byte:08b}' for byte in msg)
     
-    # before you return, you must invert the move-to-front and BWT if applicable
-    # here, decompressed message should be the return value from decode()
+    # Remove the padding bits from the end
+    if padding:
+        cmsg = cmsg[:-padding]
+
+    # Huffman decode
+    decompressedMsg = decode(cmsg, decoderRing)
+    
+    # Reverse MTF and BWT if enabled
     if useBWT:
         decompressedMsg = imtf(decompressedMsg)
         decompressedMsg = ibwt(decompressedMsg)
-   
-    byteMsg = decode(msg, decoderRing)
-
-    for bit in byteMsg[0]:
-
-
     
-    raise NotImplementedError
+    return decompressedMsg
 
 # memory efficient iBWT
 def ibwt(msg):
+    # memory efficient iBWT
     # I would work with a bytearray to store the IBWT output
-    out = bytearray()
     lastRow = msg
     firstRow = sorted(msg)
-
     n = len(lastRow)
-    lastFirst = [0] * n
-    countLast = {}
-    countFirst = {}
 
-    #order you see in in lastRow of char is same order u see them in first
-    for i in range(n):
-        cL = lastRow[i]
-        countLast[cL] = countLast.get(cL, 0) + 1
-        occL = countLast[cL]
+    # Build mapping from characters to their positions in firstRow
+    positions = {}
+    for j, c in enumerate(firstRow):
+        positions.setdefault(c, []).append(j)
 
-        countFirst.setdefault(cL, 0)
-        j = 0
-        while j < n:
-            if firstRow[j] == cL:
-                countFirst[cL] += 1
-                if countFirst[cL] == occL:
-                    lastFirst[i] = j
-                    break
-            j += 1
+    # Build LF mapping using ranks
+    firstLast = [0] * n
+    occLast = {}
+    for i, c in enumerate(lastRow):
+        occLast[c] = occLast.get(c, 0) + 1
+        k = occLast[c] - 1  # zero based rank
+        firstLast[i] = positions[c][k]
 
+    # Reconstruct original by walking LF starting from the terminator row
     out = bytearray(n)
-    row = lastFirst[lastRow.index(termchar)]
+    row = firstLast[lastRow.index(termchar)]
     for i in range(n - 1, -1, -1):
         out[i] = lastRow[row]
-        row = lastFirst[row]
+        row = firstLast[row]
 
-    return out[:-1]
+    return out[:-1]  # strip the terminator
 
 
 # Burrows-Wheeler Transform fncs
