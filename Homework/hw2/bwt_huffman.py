@@ -77,8 +77,6 @@ def compress(msg, useBWT):
         msg = mtf(msg)
 
     # Initializes an array to hold the compressed message.
-   
-
     bString, decoderRing = encode(msg) #0s and 1s, convert to byte arrays 
     compressed = bytearray()
     for i in range(0, len(bString), 8):
@@ -105,6 +103,7 @@ def decompress(msg, decoderRing, useBWT):
 
     for bit in byteMsg[0]:
 
+
     
     raise NotImplementedError
 
@@ -115,22 +114,34 @@ def ibwt(msg):
     lastRow = msg
     firstRow = sorted(msg)
 
-    #order you see in in lastRow of char is same order u see them in first
-    for i in range(firstRow):
-            cur = bytearray()
-            #lastRow char is before firstRow char 
-            cloneLR = lastRow
-            while len(cloneLR) != 0:
-                cur.append(firstRow[i])
-                nextClone = cloneLR.find(firstRow[i]) 
-                next = lastRow.find(cloneLR[nextClone])
-                #find the index of first occurance of ith char
-                cur.append(firstRow[next])
-                cloneLR.pop(nextClone)
-            out.append(cur)
+    n = len(lastRow)
+    lastFirst = [0] * n
+    countLast = {}
+    countFirst = {}
 
-    
-    return out
+    #order you see in in lastRow of char is same order u see them in first
+    for i in range(n):
+        cL = lastRow[i]
+        countLast[cL] = countLast.get(cL, 0) + 1
+        occL = countLast[cL]
+
+        countFirst.setdefault(cL, 0)
+        j = 0
+        while j < n:
+            if firstRow[j] == cL:
+                countFirst[cL] += 1
+                if countFirst[cL] == occL:
+                    lastFirst[i] = j
+                    break
+            j += 1
+
+    out = bytearray(n)
+    row = lastFirst[lastRow.index(termchar)]
+    for i in range(n - 1, -1, -1):
+        out[i] = lastRow[row]
+        row = lastFirst[row]
+
+    return out[:-1]
 
 
 # Burrows-Wheeler Transform fncs
